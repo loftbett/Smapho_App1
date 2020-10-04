@@ -1,70 +1,70 @@
-// Copyright 2018 The Flutter team. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
+// Copyright 2018 The Flutter team. All rights reserved.
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
+import 'package:flutter/rendering.dart';
 
-void main() => runApp(MyApp());
-/* ファストアローでの記法　
-  main() {
-    runApp(MyApp());
-  }; と同義 */
+//void main() => runApp(MyApp());
+void main() {
+  debugPaintSizeEnabled = false;
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  // StatelessWidgetはFlutterでよく出会うクラス(自身で状態を持たないクラス)
   @override
   Widget build(BuildContext context) {
-    // buildメソッドはWidgetの肝? Widgetクラスには必ず持つ。Widgetを返す。
     return MaterialApp(
-      // これより下部はWidget(アプリ)の形を定義
-      title: 'Welcome to Flutter TEST', // アプリタイトル:
-      home: RandomWords(),
-    );
+        // これより下部はWidget(アプリ)の形を定義
+        home:
+            Scaffold(appBar: AppBar(title: Text('Flat')), body: OnOffButton()));
   }
 }
 
-// stfulと打つと雛形を作ってくれる
-class RandomWords extends StatefulWidget {
+class OnOffButton extends StatefulWidget {
   @override
-  _RandomWordsState createState() => _RandomWordsState();
+  _OnOffButtonState createState() => _OnOffButtonState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
-  @override
-  final _suggestions = <WordPair>[];
-  final _biggerFont = TextStyle(fontSize: 18.0);
+class _OnOffButtonState extends State<OnOffButton> {
+  bool _onoffState = true;
+  String _buttonText = 'test';
+  int _count = 0;
 
+  void _hundleTap(String s) {
+    setState(() {
+      _count = int.parse(s);
+      _onoffState = !_onoffState;
+      _buttonText = _onoffState ? 'ON' : 'OFF';
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Random List')),
-      body: _buildSuggestions(),
-    );
-  }
-
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          // itemBuilderがListView.builderを使った際にListの項目を作り出すようの
-          // 処理記述部
-          if (i.isOdd) return Divider(color: Colors.yellow);
-          // Divider：横線
-
-          final index = i ~/ 2;
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10));
-          }
-          return _buildRow(_suggestions[index]);
-        });
-  }
-
-  Widget _buildRow(WordPair pair) {
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-    );
+    Color onoffColor = _onoffState ? Colors.red : Colors.grey;
+    return Container(
+        padding: EdgeInsets.all(50.0),
+        child: Column(children: <Widget>[
+          Text("$_count",
+              style: TextStyle(
+                  color: Colors.blueAccent,
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.w500)),
+          PopupMenuButton<int>(
+              onSelected: (int s) => {
+                    setState(() {
+                      _count = s * 10;
+                    })
+                  }, //_hundleTap,
+              // itemBuilderのプロパティとして、BuilderContextを引数として
+              // PopupMenuEntry<String>の型で、[]配列の中身を返している。
+              //
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                    const PopupMenuItem<int>(value: 1, child: Text('1')),
+                    const PopupMenuItem<int>(value: 2, child: Text('2')),
+                    const PopupMenuItem<int>(value: 3, child: Text('3')),
+                    const PopupMenuItem<int>(value: 4, child: Text('4')),
+                  ])
+        ]));
   }
 }
