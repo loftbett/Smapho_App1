@@ -1,37 +1,18 @@
-// Use of this source code is governed by a BSD-style license that can be
-// Copyright 2018 The Flutter team. All rights reserved.
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-//void main() => runApp(MyApp());
-void main() {
-  debugPaintSizeEnabled = false;
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        // これより下部はWidget(アプリ)の形を定義
-        home: MainApp());
-  }
-}
-
-class MainApp extends StatefulWidget {
-  MainApp({Key key}) : super(key: key);
+class SellHistoryMain extends StatefulWidget {
+  SellHistoryMain({Key key}) : super(key: key);
   // MainAppの引数あり(key)でのコンストラクタとして右側の処理を定義(リダイレクト)。
   // 右側(super(key*A: key*B))は名前(key*A)付き引数指定のコンストラクタに
   // MainAppの引数部({Key key})のkeyをkey*Bとして渡している形。
   // 今回の呼び出し元(buildメソッドのMainApp()部分)でkeyを指定していないため、keyはnullとなる。
   // 参考:https://note.com/zutai_dekame/n/nabf22f1a3eec
   @override
-  _MainAppState createState() => _MainAppState();
+  _SellHistoryMainState createState() => _SellHistoryMainState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _SellHistoryMainState extends State<SellHistoryMain> {
   int _currentIndex = 0;
   final items = <BottomNavigationBarItem>[
     _btmItemSet(Icon(Icons.collections), '切替'),
