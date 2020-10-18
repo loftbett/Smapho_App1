@@ -1,6 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+Widget sellAppMain(BuildContext context) {
+  return MaterialApp(
+      // これより下部はWidget(アプリ)の形を定義
+      home: Scaffold(
+          appBar: AppBar(
+            leading: Icon(Icons.menu),
+            backgroundColor: Colors.orange,
+            title: Text('Form'),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: Icon(
+                  Icons.sync,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          body: SellHistoryMain()));
+}
+
 class SellHistoryMain extends StatefulWidget {
   SellHistoryMain({Key key}) : super(key: key);
   // MainAppの引数あり(key)でのコンストラクタとして右側の処理を定義(リダイレクト)。
@@ -28,10 +49,6 @@ class _SellHistoryMainState extends State<SellHistoryMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('テストアプリ(仮)' + _currentIndex.toString()),
-        backgroundColor: Colors.black,
-      ),
       body: IndexedStack(
         index: _currentIndex,
         children: tabs,
