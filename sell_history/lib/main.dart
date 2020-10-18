@@ -17,15 +17,80 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        // これより下部はWidget(アプリ)の形を定義
-        home: Scaffold(appBar: AppBar(title: Text('Form')), body: RadioTest()));
-    // 試作アプリを動かす場合は下記
-    // home: SellHistoryMain());
+//    return sellAppMain(context); // 試作アプリ実行用
+    return testMain(context); // テストアプリ実行用
   }
 }
 
-/**
+Widget testMain(BuildContext context) {
+  return MaterialApp(
+      // これより下部はWidget(アプリ)の形を定義
+      home: Scaffold(
+          appBar: AppBar(
+            leading: Icon(Icons.menu),
+            backgroundColor: Colors.orange,
+            title: Text('Form'),
+            centerTitle: true,
+          ),
+          body: AppButtonTest()));
+}
+
+/*
+  下部ボタンのテストクラス
+*/
+class AppButtonTest extends StatefulWidget {
+  @override
+  _AppButtonTestState createState() => _AppButtonTestState();
+}
+
+class _AppButtonTestState extends State<AppButtonTest> {
+  int _currentIndex = 0;
+  final _pageWidget = [
+    PageWidget(color: Colors.white, title: 'Home'),
+    PageWidget(color: Colors.blue, title: 'album'),
+    PageWidget(color: Colors.orange, title: 'chat'),
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pageWidget.elementAt(_currentIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Home'),
+              backgroundColor: Colors.red),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.photo_album),
+              title: Text('album'),
+              backgroundColor: Colors.green),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), title: Text('chat')),
+        ],
+        currentIndex: _currentIndex,
+        fixedColor: Colors.blueAccent,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType
+            .fixed, // shiftingにした場合はBarItemのバックグラウンドカラーを設定する
+      ),
+    );
+  }
+
+  void _onItemTapped(int index) => setState(() => _currentIndex = index);
+}
+
+class PageWidget extends StatelessWidget {
+  final Color color;
+  final String title;
+
+  PageWidget({Key key, this.color, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(color: color, child: Center(child: Text(title)));
+  }
+}
+
+/*
  * ボタンテストクラス
  */
 class OnOffButton extends StatefulWidget {
@@ -49,6 +114,7 @@ class _OnOffButtonState extends State<OnOffButton> {
   @override
   Widget build(BuildContext context) {
     Color onoffColor = _onoffState ? Colors.red : Colors.grey;
+
     return Container(
         padding: EdgeInsets.all(50.0),
         child: Column(children: <Widget>[
@@ -76,7 +142,7 @@ class _OnOffButtonState extends State<OnOffButton> {
   }
 }
 
-/**
+/*
  * テキスト入力テストクラス
  */
 class ChangeForm extends StatefulWidget {
@@ -138,7 +204,7 @@ class _ChangeFormState extends State<ChangeForm> {
   }
 }
 
-/**
+/*
  * チェンジボックステスト
  * Todoリストに利用！
  * ListのどれがタップされたかはControllerを追加して認識する？
@@ -193,7 +259,7 @@ class _CheckboxTestState extends State<CheckboxTest> {
   }
 }
 
-/**
+/*
  * Radioテスト
  */
 class RadioTest extends StatefulWidget {
@@ -254,7 +320,120 @@ class _RadioTestState extends State<RadioTest> {
         ));
   }
 }
-/**
+
+/*
+　スイッチテスト
+*/
+class SwitchTest extends StatefulWidget {
+  @override
+  _SwitchTestState createState() => _SwitchTestState();
+}
+
+class _SwitchTestState extends State<SwitchTest> {
+  bool _active = false;
+
+  void _hundleSwitch(bool e) => setState(() => _active = e);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(50.0),
+        child: Column(
+          children: <Widget>[
+            Icon(
+              Icons.thumb_up,
+              color: _active ? Colors.red : Colors.grey,
+              size: 100.0,
+            ),
+            Switch(
+              value: _active,
+              onChanged: _hundleSwitch,
+            )
+          ],
+        ));
+  }
+}
+
+/*
+  スライダーテスト
+*/
+class SliderTest extends StatefulWidget {
+  @override
+  _SliderTestState createState() => _SliderTestState();
+}
+
+class _SliderTestState extends State<SliderTest> {
+  double _value = 0.0;
+  double _startValue = 0.0;
+  double _endValue = 0.0;
+
+  void _hundleSliderValue(double e) => setState(() => _value = e);
+  void _hundleSliderStartValue(double e) => setState(() => _startValue = e);
+  void _hundleSliderEndValue(double e) => setState(() => _endValue = e);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(50.0),
+        child: Column(
+          children: [
+            Center(child: Text('現在値: ${_value}')),
+            Center(child: Text('開始時の値: ${_startValue}')),
+            Center(child: Text('終了時の値: ${_endValue}')),
+            Slider(
+              label: '${_value}',
+              min: 0,
+              max: 10,
+              value: _value,
+              activeColor: Colors.orange,
+              inactiveColor: Colors.blueAccent,
+              divisions: 10,
+              onChanged: _hundleSliderValue,
+              onChangeStart: _hundleSliderStartValue,
+              onChangeEnd: _hundleSliderEndValue,
+            )
+          ],
+        ));
+  }
+}
+
+/*
+　日付選択のテストクラス
+*/
+class DatePickerTest extends StatefulWidget {
+  @override
+  _DatePickerTestState createState() => _DatePickerTestState();
+}
+
+class _DatePickerTestState extends State<DatePickerTest> {
+  TimeOfDay _date = new TimeOfDay.now();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _date,
+    );
+    if (picked != null)
+      setState(() {
+        _date = picked;
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(50.0),
+        child: Column(
+          children: [
+            Center(child: Text("${_date}")),
+            RaisedButton(
+                onPressed: () => _selectDate(context), child: Text('時間選択'))
+          ],
+        ));
+  }
+}
+
+/*
  * ダイアログテストクラス
  */
 // enum Answer { YES, NO }
