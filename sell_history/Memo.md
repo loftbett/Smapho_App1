@@ -9,6 +9,11 @@ https://github.com/microsoft/vscode/issues/1679
         "files.trimTrailingWhitespace": false
     },
 ```
+1. ランダム情報の作成ツール(vscode-random)
+```
+　　　挿入したい場所にカーソルを持って行き、
+　　　コマンドパレット(command+p)を開いて"random"と打つ
+```
 
 ## Flutter関連
 1. 新規にクラスを作成した場合は、ホットリロードでは適用されないことに注意！  
