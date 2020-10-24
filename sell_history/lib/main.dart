@@ -32,7 +32,141 @@ Widget testMain(BuildContext context) {
             title: Text('Form'),
             centerTitle: true,
           ),
-          body: AppButtonTest()));
+          body: DrawerTest()));
+}
+
+/*
+  ドロワーテスト
+*/
+class DrawerTest extends StatefulWidget {
+  @override
+  _DrawerTestState createState() => _DrawerTestState();
+}
+
+class _DrawerTestState extends State<DrawerTest> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ),
+      appBar: AppBar(title: Text('Drawer')),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            // DrawerHeader(// 通常のHeader
+            //   child: Text('Header'),
+            //   decoration: BoxDecoration(color: Colors.blue),
+            //   margin: EdgeInsets.all(5.0),
+            //   padding: EdgeInsets.all(5.0),
+            // ),
+            UserAccountsDrawerHeader(
+              // ユーザアカウントの情報を記載する用
+              accountName: Text('username'),
+              currentAccountPicture: Icon(Icons.supervised_user_circle),
+              otherAccountsPictures: [
+                Icon(Icons.supervised_user_circle),
+                CircleAvatar(
+                  backgroundColor: Colors.white,
+                  backgroundImage: NetworkImage('https://i.pravatar.cc/'),
+                ),
+              ],
+            ),
+            ListTile(
+              title: Text('tile1'),
+              trailing: Icon(Icons.arrow_forward),
+            ),
+            ListTile(
+              title: Text('tile2'),
+              trailing: Icon(Icons.arrow_forward),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/*
+  タイトルスライドリストテストクラス
+*/
+class SlideHeaderListTest extends StatefulWidget {
+  @override
+  _SlideHeaderListTestState createState() => _SlideHeaderListTestState();
+}
+
+class _SlideHeaderListTestState extends State<SlideHeaderListTest> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: CustomScrollView(
+      slivers: [
+        SliverAppBar(
+            floating: true, //リストの先頭まで戻らなくても上スクロールでタイトルを出すかどうか ※trueで良さそう
+            pinned: true, // タイトル部を1行分残すかどうか　※その時々
+            snap:
+                true, // スクロールにより中途半端に表示されなくなる。floatingをtrueにする必要あり.　※trueで良さそう
+            expandedHeight: 100.0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text('Demo'),
+            )),
+        SliverFixedExtentList(
+          itemExtent: 200.0,
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) {
+            return Container(
+                alignment: Alignment.center,
+                color: Colors.lightBlue[100 * (index % 9)],
+                child:
+                    Text('list item $index', style: TextStyle(fontSize: 30.0)));
+          }, childCount: 10),
+        )
+      ],
+    ));
+  }
+}
+
+/*
+  タイトルスライドグリッドテストクラス
+*/
+class SlideTitleGridTest extends StatefulWidget {
+  @override
+  _SlideTitleGridTestState createState() => _SlideTitleGridTestState();
+}
+
+class _SlideTitleGridTestState extends State<SlideTitleGridTest> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          pinned: true,
+          snap: true,
+          expandedHeight: 100,
+          flexibleSpace: FlexibleSpaceBar(title: Text('Title')),
+        ),
+        SliverGrid(
+            delegate:
+                SliverChildBuilderDelegate((BuildContext context, int index) {
+              return Container(
+                  alignment: Alignment.center,
+                  color: Colors.teal[100 * (index % 9)],
+                  child: Text('List index $index'));
+            }),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                // グリッドの横配置数を画面サイズをもとに決定してくれる
+                // SliverGridDelegateWithFixedCrossAxisExtentは固定
+                maxCrossAxisExtent: 100.0,
+                //crossAxisCount: 10, // fixedの場合の配置数
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 4.0))
+      ],
+    ));
+  }
 }
 
 /*
@@ -87,6 +221,77 @@ class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(color: color, child: Center(child: Text(title)));
+  }
+}
+
+/*
+  Tabバーテストクラス
+*/
+class TabBarTest extends StatefulWidget {
+  @override
+  _TabBarTestState createState() => _TabBarTestState();
+}
+
+class _TabBarTestState extends State<TabBarTest>
+    with SingleTickerProviderStateMixin {
+  final _tab = <Tab>[
+    Tab(text: 'Car', icon: Icon(Icons.directions_car)),
+    Tab(text: 'Bicycle', icon: Icon(Icons.directions_bike)),
+    Tab(text: 'Boat', icon: Icon(Icons.directions_boat)),
+  ];
+
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tab.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          bottom: TabBar(
+        tabs: _tab,
+        controller: _tabController,
+      )),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          TabPage(title: 'Car', icon: Icons.directions_car),
+          TabPage(title: 'Car', icon: Icons.directions_car),
+          TabPage(title: 'Boat', icon: Icons.directions_boat),
+        ],
+      ),
+    );
+  }
+}
+
+class TabPage extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  TabPage({Key key, this.icon, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle tS = Theme.of(context).textTheme.display1;
+    return Center(
+        child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, size: 64.0, color: tS.color),
+        Text(title, style: tS),
+      ],
+    ));
   }
 }
 
