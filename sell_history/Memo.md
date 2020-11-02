@@ -18,6 +18,9 @@
     　　　コマンドパレット(command+p)を開いて"random"と打つ
     ```
 
+1. 補完処理のショートカット  
+    Command + . で補完候補が出てくる。
+    
 ## Flutter関連
 1. 新規にクラスを作成した場合は、ホットリロードでは適用されないことに注意！  
 　クラスの中の動きは変えればリロードで動く  
@@ -36,7 +39,7 @@
 
     ```
     // 返値の型 変数の型(引数) 変数名 = 内容
-    int Function(int) addValue = (int a) { return a+1; };
+    int addValue = (int a) { return a+1; };
     
     print(addValue(1)); // 2が表示
     ```
@@ -44,7 +47,7 @@
     
     ```
     // returnのみの関数であれば、{return }を => に変更可能
-    int Function(int) addValue = (int a) => a + 1;
+    int addValue = (int a) => a + 1;
     // 無名関数として使用することも可能。
     print((int a)=> a+1);
     ```
@@ -54,5 +57,55 @@
     int mulValue(addValue(1)) = (int a) => a*1; 
     ```
 
-1.
+1. ：について  
+    出てくるケースを下記に記載する。
+    1. プロパティの指定  
+        Widgetなどで 「color: Colors.red」などと記載する
+    1. コンストラクタのリダイレクト  
+        :の後にリダイレクトするコンストラクタを記載。リダイレクト先の処理→元の処理という実行順
+        ```
+        Class Person{
+            String _name = "";
+            Person():this.SetName(){
+                print(this._name);
+            };
+            Person.SetName(){
+                this._name = "名前";
+            }
+        }
+        ```
+    1. コンストラクタの変数初期化処理  
+        ```
+        Class Person{
+            String _name;
+            int _age;
+            Person(): this.SetName();
+            SetName(String):_name="",
+                        _age=18
+                    {
+                        print(_name);
+                    }
+        }
+        ```
+        ※名前付きコンストラクタが存在する場合、そちらには適用されないので注意。
+        ※親のコンストラクタを利用する際に利用される(内部では呼び出し不可)
+        ```
+        class Dog {
+            var name;
+            var age;
+            
+            Dog() : this.anonymous();
+            Dog.anonymous() : this.name = 'Anonymous',
+            this.age = 0;
+            Dog.nameAge(name, age) : this.name = name,
+            this.age = age;
+        }
+        class Pochi extends Dog {
+          ⭕️　Pochi() : super.nameAge('Pochi', 5);
+          ❌　Pochi(){
+                super.nameAge('Pochi', 5);
+                }
+        }
+        ```
+
 
