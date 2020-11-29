@@ -1,52 +1,73 @@
-import '../importer.dart';
+import 'package:sell_history/components/importer.dart';
 
 class TodoListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _bloc = Provider.of<TodoBloc>(context, listen: false);
+    StyleBase styleBase = new StyleBase();
+    final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(title: Text(ConstText.todoListView)),
-      body: StreamBuilder<List<Todo>>(
-        stream: _bloc.todoStream,
-        builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                Todo todo = snapshot.data[index];
-
-                return Dismissible(
-                  key: Key(todo.id),
-                  background: _backgroundOfDismissible(),
-                  secondaryBackground: _secondaryBackgroundOfDismissible(),
-                  onDismissed: (direction) {
-                    _bloc.delete(todo.id);
-                  },
-                  child: Card(
-                      child: ListTile(
-                    onTap: () {
-                      _moveToEditView(context, _bloc, todo);
-                    },
-                    title: Text("${todo.title}"),
-                    subtitle: Text("${todo.note}"),
-                    trailing: Text("${todo.dueDate.toLocal().toString()}"),
-                    isThreeLine: true,
-                  )),
-                );
-              },
-            );
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _moveToCreateView(context, _bloc);
-        },
-        child: Icon(Icons.add, size: 40),
-      ),
-    );
+        appBar: AppBar(title: Text(ConstText.todoListView)),
+        body: StreamBuilder<List<Todo>>(
+          stream: _bloc.todoStream,
+          builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Todo todo = snapshot.data[index];
+                  bool checked = todo.complete;
+                  return Dismissible(
+                      // スワイプ処理を備えたクラス
+                      key: Key(todo.id),
+                      background: _backgroundOfDismissible(),
+                      secondaryBackground: _secondaryBackgroundOfDismissible(),
+                      onDismissed: (direction) {
+                        _bloc.delete(todo.id);
+                      },
+                      child: Card(
+                          child: ListTile(
+                              onTap: () {
+                                _moveToEditView(context, _bloc, todo);
+                              },
+                              title: Text("${todo.title}",
+                                  style: todo.complete
+                                      ? styleBase.completedTodoStyle()
+                                      : styleBase.todoStyle()),
+                              subtitle: Text("${todo.note}"),
+                              trailing: Text(
+                                  "${ConstText.dateFormatYMDHM.format(todo.dueDate.toLocal())}"),
+                              isThreeLine: true,
+                              leading: Checkbox(
+                                value: checked,
+                                onChanged: (b) {
+                                  _bloc.check(b, todo.id);
+                                },
+                              )),
+                          color: todo.complete ? Colors.grey : Colors.white));
+                },
+              );
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _moveToCreateView(context, _bloc);
+          },
+          child: Icon(Icons.add, size: 40),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+              height: size.height * 0.05,
+              child: IconButton(
+                icon: Icon(Icons.sync),
+                onPressed: () {
+                  print('pushed');
+                },
+              )),
+        ));
   }
 
   _moveToEditView(

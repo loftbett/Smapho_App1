@@ -29,6 +29,7 @@ class TodoBloc {
   create(Todo todo) {
     todo.assignUUID();
     sampleTodos.add(todo);
+
     getTodos();
   }
 
@@ -40,9 +41,18 @@ class TodoBloc {
     }
   }
 
+  check(bool state, String id) {
+    int _index = sampleTodos.indexWhere((Todo t) => t.id == id);
+    if (_index >= 0) {
+      sampleTodos[_index].complete = state;
+      getTodos();
+    }
+  }
+
   delete(String id) {
     int _index = sampleTodos.indexWhere((Todo t) => t.id == id);
     if (_index >= 0) {
+      sampleTodos[sampleTodos.length - 1].complete = true;
       sampleTodos.removeAt(_index);
       getTodos();
     }

@@ -16,6 +16,7 @@ class TodoEditView extends StatelessWidget {
     _newTodo.title = todo.title;
     _newTodo.dueDate = todo.dueDate;
     _newTodo.note = todo.note;
+    _newTodo.complete = todo.complete;
   }
 
   @override

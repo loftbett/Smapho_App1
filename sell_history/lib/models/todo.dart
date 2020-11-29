@@ -2,6 +2,7 @@ import '../components/importer.dart';
 
 class Todo {
   String id;
+  bool complete;
   String title;
   DateTime dueDate;
   String note;
@@ -11,6 +12,7 @@ class Todo {
     title = "";
     dueDate = DateTime.now();
     note = "";
+    complete = false;
   }
 
   Todo clone() {
