@@ -23,6 +23,8 @@
 　https://sbfl.net/blog/2014/12/20/dart-style-guide/
 1. Dartのasync, await(非同期処理)について
 　https://medium.com/@kawanojieee/dart-async-await-394846fb3d2c
+1. シングルトンについて  
+　https://note.com/teamnet_fuk/n/n3833c819e05b
 
 ## その他雑多事項(参考文献など)
 
