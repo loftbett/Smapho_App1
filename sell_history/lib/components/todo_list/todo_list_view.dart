@@ -20,11 +20,11 @@ class TodoListView extends StatelessWidget {
                   bool checked = todo.complete;
                   return Dismissible(
                       // スワイプ処理を備えたクラス
-                      key: Key(todo.id),
+                      key: Key(todo.todoId),
                       background: _backgroundOfDismissible(),
                       secondaryBackground: _secondaryBackgroundOfDismissible(),
                       onDismissed: (direction) {
-                        _bloc.delete(todo.id);
+                        _bloc.delete(todo.todoId);
                       },
                       child: Card(
                           child: ListTile(
@@ -32,17 +32,18 @@ class TodoListView extends StatelessWidget {
                                 _moveToEditView(context, _bloc, todo);
                               },
                               title: Text("${todo.title}",
-                                  style: todo.complete
-                                      ? styleBase.completedTodoStyle()
-                                      : styleBase.todoStyle()),
-                              subtitle: Text("${todo.note}"),
+                                  style: styleBase.todoMainText(
+                                      todo.complete, todo.important)),
+                              subtitle: Text("${todo.note}",
+                                  style: styleBase.todoSubText(
+                                      todo.complete, todo.important)),
                               trailing: Text(
                                   "${ConstText.dateFormatYMDHM.format(todo.dueDate.toLocal())}"),
                               isThreeLine: true,
                               leading: Checkbox(
                                 value: checked,
                                 onChanged: (b) {
-                                  _bloc.check(b, todo.id);
+                                  _bloc.check(b, todo.todoId);
                                 },
                               )),
                           color: todo.complete ? Colors.grey : Colors.white));

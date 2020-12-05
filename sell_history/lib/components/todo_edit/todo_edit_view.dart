@@ -1,9 +1,6 @@
 import '../importer.dart';
-import 'package:intl/intl.dart';
 
 class TodoEditView extends StatelessWidget {
-  final DateFormat _format = DateFormat("yyyy-MM-dd HH:mm");
-
   final TodoBloc todoBloc;
   final Todo todo;
   final Todo _newTodo = Todo.newTodo();
@@ -12,11 +9,13 @@ class TodoEditView extends StatelessWidget {
     // Dartでは参照渡しが行われるため、todoをそのまま編集してしまうと、
     // 更新せずにリスト画面に戻ったときも値が更新されてしまうため、
     // 新しいインスタンスを作る
-    _newTodo.id = todo.id;
+    _newTodo.todoId = todo.todoId;
+    _newTodo.todoGroupId = todo.todoGroupId;
     _newTodo.title = todo.title;
     _newTodo.dueDate = todo.dueDate;
     _newTodo.note = todo.note;
     _newTodo.complete = todo.complete;
+    _newTodo.important = todo.important;
   }
 
   @override
@@ -28,6 +27,7 @@ class TodoEditView extends StatelessWidget {
           child: Column(
             children: <Widget>[
               _titleTextFormField(),
+              _importantCheckField(),
               _dueDateTimeFormField(),
               _noteTextFormField(),
               _confirmButton(context)
@@ -46,9 +46,19 @@ class TodoEditView extends StatelessWidget {
     _newTodo.title = title;
   }
 
+  Widget _importantCheckField() => SwitchListTile(
+        value: _newTodo.important,
+        onChanged: _setImportant,
+      );
+
+  void _setImportant(bool flg) {
+    print("state:" + (flg ? "true" : "false"));
+    _newTodo.important = flg;
+  }
+
   // ↓ https://pub.dev/packages/datetime_picker_formfield のサンプルから引用
   Widget _dueDateTimeFormField() => DateTimeField(
-      format: _format,
+      format: ConstText.dateFormatYMDHM,
       decoration: InputDecoration(labelText: "締切日"),
       initialValue: _newTodo.dueDate ?? DateTime.now(),
       onChanged: _setDueDate,
@@ -91,7 +101,7 @@ class TodoEditView extends StatelessWidget {
         ),
         label: Text("決定"),
         onPressed: () {
-          if (_newTodo.id == null) {
+          if (_newTodo.todoId == null) {
             todoBloc.create(_newTodo);
           } else {
             todoBloc.update(_newTodo);

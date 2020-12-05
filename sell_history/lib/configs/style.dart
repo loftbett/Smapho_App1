@@ -1,11 +1,15 @@
 import 'package:sell_history/components/importer.dart';
 
 class StyleBase {
-  TextStyle completedTodoStyle() {
-    return TextStyle(color: Colors.white);
+  // Todoのメインテキストのスタイル(チェック時)
+  TextStyle todoMainText(bool complete, bool important) {
+    return TextStyle(
+        fontSize: 20.0,
+        color: complete ? Colors.white : important ? Colors.red : Colors.black);
   }
 
-  TextStyle todoStyle() {
-    return TextStyle(color: Colors.black);
+// Todoのサブテキストのスタイル
+  TextStyle todoSubText(bool complete, bool important) {
+    return TextStyle(color: complete ? Colors.white : Colors.grey[600]);
   }
 }

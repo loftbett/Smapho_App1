@@ -12,14 +12,14 @@ class TodoBloc {
   Stream<List<Todo>> get todoStream => _todoController.stream;
 
   // sinkへの流しメソッド
-  getTodos() {
-    _todoController.sink.add(sampleTodos);
+  sinkTodos() async {
+    _todoController.sink.add(await DBProvider.db.readAllTodo());
   }
 
 // コンストラクタ
   TodoBloc() {
     // 新規作成時に新規Listをsinkへ流し込み
-    getTodos();
+    sinkTodos();
   }
 
   dispose() {
@@ -27,34 +27,23 @@ class TodoBloc {
   }
 
   create(Todo todo) {
-    todo.assignUUID();
-    sampleTodos.add(todo);
-
-    getTodos();
+    todo.assignUUIDTodo();
+    DBProvider.db.insertTodo(todo);
+    sinkTodos();
   }
 
   update(Todo todo) {
-    int _index = sampleTodos.indexWhere((Todo t) => t.id == todo.id);
-    if (_index >= 0) {
-      sampleTodos[_index] = todo;
-      getTodos();
-    }
+    DBProvider.db.updateTodo(todo);
+    sinkTodos();
   }
 
   check(bool state, String id) {
-    int _index = sampleTodos.indexWhere((Todo t) => t.id == id);
-    if (_index >= 0) {
-      sampleTodos[_index].complete = state;
-      getTodos();
-    }
+    DBProvider.db.checkedTodo(state, id);
+    sinkTodos();
   }
 
   delete(String id) {
-    int _index = sampleTodos.indexWhere((Todo t) => t.id == id);
-    if (_index >= 0) {
-      sampleTodos[sampleTodos.length - 1].complete = true;
-      sampleTodos.removeAt(_index);
-      getTodos();
-    }
+    DBProvider.db.deleteTodo(id);
+    sinkTodos();
   }
 }
