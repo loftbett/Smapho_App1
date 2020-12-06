@@ -25,6 +25,8 @@
 　https://medium.com/@kawanojieee/dart-async-await-394846fb3d2c
 1. シングルトンについて  
 　https://note.com/teamnet_fuk/n/n3833c819e05b
+1. ファクトリークラスについて  
+　https://sbfl.net/blog/2015/01/04/implementing-factory-and-singleton-pattern-in-dart/
 
 ## その他雑多事項(参考文献など)
 
