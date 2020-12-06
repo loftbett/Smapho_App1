@@ -3,7 +3,7 @@ import '../importer.dart';
 class ChangeTodo extends ChangeNotifier {
   Todo _newTodo;
 
-  void value(Todo todo) {
+  set value(Todo todo) {
     _newTodo = todo;
   }
 
@@ -23,7 +23,7 @@ class TodoEditView extends StatelessWidget {
     // Dartでは参照渡しが行われるため、todoをそのまま編集してしまうと、
     // 更新せずにリスト画面に戻ったときも値が更新されてしまうため、
     // 新しいインスタンスを作る
-    _newTodo.value(todo);
+    _newTodo.value = todo;
   }
 
   @override
