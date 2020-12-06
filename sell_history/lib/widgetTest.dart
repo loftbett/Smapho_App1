@@ -32,7 +32,7 @@ Widget testMain(BuildContext context) {
             title: Text('Form'),
             centerTitle: true,
           ),
-          body: AnimationTest()));
+          body: CheckboxTest()));
 }
 
 /*
