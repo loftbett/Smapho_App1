@@ -1,66 +1,68 @@
 import '../importer.dart';
 
+class ChangeTodo extends ChangeNotifier {
+  Todo _newTodo;
+
+  void value(Todo todo) {
+    _newTodo = todo;
+  }
+
+  Todo get newTodo => _newTodo;
+
+  void execChange() {
+    notifyListeners();
+  }
+}
+
 class TodoEditView extends StatelessWidget {
   final TodoBloc todoBloc;
   final Todo todo;
-  final Todo _newTodo = Todo.newTodo();
+  final ChangeTodo _newTodo = ChangeTodo();
 
   TodoEditView({Key key, @required this.todoBloc, @required this.todo}) {
     // Dartでは参照渡しが行われるため、todoをそのまま編集してしまうと、
     // 更新せずにリスト画面に戻ったときも値が更新されてしまうため、
     // 新しいインスタンスを作る
-    _newTodo.todoId = todo.todoId;
-    _newTodo.todoGroupId = todo.todoGroupId;
-    _newTodo.title = todo.title;
-    _newTodo.dueDate = todo.dueDate;
-    _newTodo.note = todo.note;
-    _newTodo.complete = todo.complete;
-    _newTodo.important = todo.important;
+    _newTodo.value(todo);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text(ConstText.todoEditView)),
-        body: Container(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            children: <Widget>[
-              _titleTextFormField(),
-              _importantCheckField(),
-              _dueDateTimeFormField(),
-              _noteTextFormField(),
-              _confirmButton(context)
-            ],
-          ),
-        ));
+    return ChangeNotifierProvider<ChangeTodo>.value(
+        value: _newTodo,
+        child: Scaffold(
+            appBar: AppBar(title: Text(ConstText.todoEditView)),
+            body: Container(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                children: <Widget>[
+                  _titleTextFormField(),
+                  ImportantCheckField(),
+                  _dueDateTimeFormField(),
+                  _noteTextFormField(),
+                  _confirmButton(context)
+                ],
+              ),
+            )));
   }
 
+  // タイトル入力Widget
   Widget _titleTextFormField() => TextFormField(
         decoration: InputDecoration(labelText: "タイトル"),
-        initialValue: _newTodo.title,
+        initialValue: _newTodo.newTodo.title,
         onChanged: _setTitle,
       );
 
   void _setTitle(String title) {
-    _newTodo.title = title;
+    _newTodo.newTodo.title = title;
   }
 
-  Widget _importantCheckField() => SwitchListTile(
-        value: _newTodo.important,
-        onChanged: _setImportant,
-      );
-
-  void _setImportant(bool flg) {
-    print("state:" + (flg ? "true" : "false"));
-    _newTodo.important = flg;
-  }
-
+  // 期日設定Widget
   // ↓ https://pub.dev/packages/datetime_picker_formfield のサンプルから引用
   Widget _dueDateTimeFormField() => DateTimeField(
-      format: ConstText.dateFormatYMDHM,
-      decoration: InputDecoration(labelText: "締切日"),
-      initialValue: _newTodo.dueDate ?? DateTime.now(),
+      format: ConstText.dateFormatYMD,
+      decoration: InputDecoration(labelText: "期限"),
+      initialValue: _newTodo.newTodo.dueDate,
       onChanged: _setDueDate,
       onShowPicker: (context, currentValue) async {
         final date = await showDatePicker(
@@ -80,37 +82,57 @@ class TodoEditView extends StatelessWidget {
       });
 
   void _setDueDate(DateTime dt) {
-    _newTodo.dueDate = dt;
+    _newTodo.newTodo.dueDate = dt;
   }
 
   Widget _noteTextFormField() => TextFormField(
         decoration: InputDecoration(labelText: "メモ"),
-        initialValue: _newTodo.note,
+        initialValue: _newTodo.newTodo.note,
         maxLines: 3,
         onChanged: _setNote,
       );
 
   void _setNote(String note) {
-    _newTodo.note = note;
+    _newTodo.newTodo.note = note;
   }
 
-  Widget _confirmButton(BuildContext context) => RaisedButton.icon(
-        icon: Icon(
-          Icons.tag_faces,
-          color: Colors.white,
-        ),
-        label: Text("決定"),
-        onPressed: () {
-          if (_newTodo.todoId == null) {
-            todoBloc.create(_newTodo);
-          } else {
-            todoBloc.update(_newTodo);
-          }
+  Widget _confirmButton(BuildContext context) => Container(
+        padding: EdgeInsets.only(top: 20.0),
+        height: MediaQuery.of(context).size.height * 0.07,
+        width: MediaQuery.of(context).size.width * 0.5,
+        child: RaisedButton.icon(
+          icon: Icon(
+            Icons.tag_faces,
+            color: Colors.white,
+          ),
+          label: Text("追加"),
+          onPressed: () {
+            if (_newTodo.newTodo.todoId == null) {
+              todoBloc.create(_newTodo.newTodo);
+            } else {
+              todoBloc.update(_newTodo.newTodo);
+            }
 
-          Navigator.of(context).pop();
-        },
-        shape: StadiumBorder(),
-        color: Colors.green,
-        textColor: Colors.white,
+            Navigator.of(context).pop();
+          },
+          shape: StadiumBorder(),
+          color: Colors.green,
+          textColor: Colors.white,
+        ),
       );
+}
+
+class ImportantCheckField extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final ChangeTodo _todo = Provider.of<ChangeTodo>(context);
+    return SwitchListTile(
+      title: Text("重要"),
+      value: _todo.newTodo.important,
+      onChanged: (b) {
+        _todo.newTodo.important = b;
+        _todo.execChange();
+      },
+    );
+  }
 }

@@ -24,7 +24,7 @@ class Todo {
   Todo.newTodo() {
     title = "";
     todoGroupId = "";
-    dueDate = DateTime.now();
+    dueDate = null;
     note = "";
     complete = false;
     important = false;
@@ -38,11 +38,15 @@ class Todo {
       todoGroupId: json["todo_group_id"],
       title: json["title"],
       // DateTime型は文字列で保存されているため、DateTime型に変換し直す
-      dueDate: DateTime.parse(json["due_date"]).toLocal(),
+      dueDate: (json["due_date"] != null)
+          ? DateTime.parse(json["due_date"]).toLocal()
+          : null,
       note: json["note"],
       complete: (json["complete"] == 1) ? true : false,
       important: (json["important"] == 1) ? true : false,
-      uymd: DateTime.parse(json["uymd"]).toLocal(),
+      uymd: (json["uymd"] != null)
+          ? DateTime.parse(json["uymd"]).toLocal()
+          : null,
       uusr: json["uusr"]);
 
   assignUUIDTodo() {
@@ -59,10 +63,11 @@ class Todo {
         "todo_group_id": todoGroupId,
         "title": title,
         // SQLiteでの日付補完はUTC時間(日本時間-9時間)で行う
-        "due_date": dueDate.toUtc().toIso8601String(),
+        "due_date":
+            (dueDate != null) ? dueDate.toUtc().toIso8601String() : null,
         "note": note,
         "complete": complete ? "1" : "0",
         "important": important ? "1" : "0",
-        "uymd": uymd.toUtc().toIso8601String()
+        "uymd": (uymd != null) ? uymd.toUtc().toIso8601String() : null
       };
 }

@@ -37,8 +37,10 @@ class TodoListView extends StatelessWidget {
                               subtitle: Text("${todo.note}",
                                   style: styleBase.todoSubText(
                                       todo.complete, todo.important)),
-                              trailing: Text(
-                                  "${ConstText.dateFormatYMDHM.format(todo.dueDate.toLocal())}"),
+                              trailing: (todo.dueDate != null)
+                                  ? Text(
+                                      "${ConstText.dateFormatYMD.format(todo.dueDate.toLocal())}")
+                                  : null,
                               isThreeLine: true,
                               leading: Checkbox(
                                 value: checked,
