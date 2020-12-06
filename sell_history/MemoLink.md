@@ -9,6 +9,8 @@
 　https://qiita.com/tanakeiQ/items/2c4a7fcb8e95b9aa55ad
 1. Blocパターンの使い方  
 　https://qiita.com/kabochapo/items/8738223894fb74f952d3
+1. Firebaseの使い方  
+　https://www.flutter-study.dev/firebase-app/provider/
 
 ## Dart関連
 1. Dartのコーディング記法  
