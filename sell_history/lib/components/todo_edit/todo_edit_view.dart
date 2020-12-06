@@ -102,7 +102,7 @@ class TodoEditView extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.5,
         child: RaisedButton.icon(
           icon: Icon(
-            Icons.tag_faces,
+            Icons.add_to_photos_outlined,
             color: Colors.white,
           ),
           label: Text("追加"),
