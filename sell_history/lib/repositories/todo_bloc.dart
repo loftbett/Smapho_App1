@@ -13,7 +13,7 @@ class TodoBloc {
 
   // sinkへの流しメソッド
   sinkTodos() async {
-    _todoController.sink.add(await DBProvider.db.readAllTodo());
+    _todoController.sink.add(await DBProvider.db.readAllTodo(null));
   }
 
 // コンストラクタ

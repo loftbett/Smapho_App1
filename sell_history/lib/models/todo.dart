@@ -53,10 +53,6 @@ class Todo {
     todoId = Uuid().v4();
   }
 
-  assignUUIDTodoGroup() {
-    todoGroupId = Uuid().v4();
-  }
-
   // SQLiteへ登録する際のMap変換
   Map<String, dynamic> toMap() => {
         "todo_id": todoId,

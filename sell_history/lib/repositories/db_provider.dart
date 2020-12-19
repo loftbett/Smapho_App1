@@ -1,4 +1,5 @@
 import 'package:sell_history/components/importer.dart';
+import 'package:sell_history/models/todo_group.dart';
 
 class DBProvider {
   // シングルトンに近いインスタンスの作成
@@ -47,17 +48,50 @@ class DBProvider {
         ")");
   }
 
-  static final _tableName = "todo";
+  // 初期化処理
+  // TodoGroup：初期Todoデータ作成
+  Future<TodoGroup> initTodoGroup() async {
+    final TodoGroup initTG = TodoGroup.newTodoGroup();
+    initTG.assignUUIDTodoGroup();
+    initTG.todoGroupTitle = "default";
+
+    var res = await insertTodoGroup(initTG);
+    if (res < 0) {
+      return null;
+    } else {
+      return initTG;
+    }
+  }
+
+  ///  TodoGroupTable
+  static final _todoTable = "todo";
   insertTodo(Todo todo) async {
     todo.uymd = DateTime.now();
     final db = await getDatabase;
-    var res = await db.insert(_tableName, todo.toMap());
+    var res = await db.insert(_todoTable, todo.toMap());
     return res;
   }
 
-  readAllTodo() async {
+  readAllTodo(String todoGroupId) async {
     final db = await getDatabase;
-    var res = await db.query(_tableName);
+
+    // TOGOグループが未指定の場合は、適当なグループを取得
+    //TODO 初期グループの設定処理を考慮する。
+    if (todoGroupId == null) {
+      TodoGroup targetToGroup;
+      var resTodoGroupCount =
+          await db.rawQuery('SELECT COUNT(*) FROM ' + _todoGroupTable);
+      if (resTodoGroupCount.isEmpty) {
+        targetToGroup = await initTodoGroup();
+      } else {
+        targetToGroup = await readFirstTodoGroup();
+      }
+      if (targetToGroup != null) {
+        todoGroupId = targetToGroup.todoGroupId;
+      }
+    }
+    var res = await db.query(_todoTable,
+        where: "todo_group_id = ?", whereArgs: [todoGroupId]);
     // res.map()はListなどの複数値を持っているものについて、()の中の処理をしてList型を返却する
     List<Todo> list =
         res.isNotEmpty ? res.map((c) => Todo.fromMap(c)).toList() : [];
@@ -67,7 +101,7 @@ class DBProvider {
   updateTodo(Todo todo) async {
     todo.uymd = DateTime.now();
     final db = await getDatabase;
-    var res = db.update(_tableName, todo.toMap(),
+    var res = db.update(_todoTable, todo.toMap(),
         where: "todo_id = ?", whereArgs: [todo.todoId]);
     return res;
   }
@@ -79,14 +113,49 @@ class DBProvider {
     };
     final db = await getDatabase;
     var res = db
-        .update(_tableName, checkState, where: "todo_id = ?", whereArgs: [id]);
+        .update(_todoTable, checkState, where: "todo_id = ?", whereArgs: [id]);
     return res;
   }
 
   deleteTodo(String id) async {
     final db = await getDatabase;
     var res =
-        await db.delete(_tableName, where: "todo_id = ?", whereArgs: [id]);
+        await db.delete(_todoTable, where: "todo_id = ?", whereArgs: [id]);
+    return res;
+  }
+
+  ///  TodoGroupTable
+  static final _todoGroupTable = "todo_group";
+  insertTodoGroup(TodoGroup todoG) async {
+    todoG.uymd = DateTime.now();
+    final db = await getDatabase;
+    var res = await db.insert(_todoGroupTable, todoG.toMap());
+    return res;
+  }
+
+  readFirstTodoGroup() async {
+    final db = await getDatabase;
+
+    var resTodoGroupFirst =
+        await db.query(_todoGroupTable, orderBy: "uymd DESC", limit: 1);
+    // res.map()はListなどの複数値を持っているものについて、()の中の処理をしてList型を返却する
+    return resTodoGroupFirst.isNotEmpty
+        ? resTodoGroupFirst.map((c) => TodoGroup.fromMap(c)).toList()[0]
+        : null;
+  }
+
+  updateTodoGroup(TodoGroup todoG) async {
+    todoG.uymd = DateTime.now();
+    final db = await getDatabase;
+    var res = db.update(_todoGroupTable, todoG.toMap(),
+        where: "todo_group_id = ?", whereArgs: [todoG.todoGroupId]);
+    return res;
+  }
+
+  deleteTodoGroup(String id) async {
+    final db = await getDatabase;
+    var res = await db
+        .delete(_todoGroupTable, where: "todo_group_id = ?", whereArgs: [id]);
     return res;
   }
 }
