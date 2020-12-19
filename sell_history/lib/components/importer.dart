@@ -6,6 +6,8 @@ export 'dart:io';
 /**
  * プロジェクトクラス
  */
+// 共通クラス
+export 'package:sell_history/common/common_util.dart';
 // 定数クラス
 export 'package:sell_history/configs/const_text.dart';
 export 'package:sell_history/configs/style.dart';
